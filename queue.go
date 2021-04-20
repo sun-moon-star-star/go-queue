@@ -1,4 +1,4 @@
-package queue
+package go_queue
 
 import (
 	"container/list"
