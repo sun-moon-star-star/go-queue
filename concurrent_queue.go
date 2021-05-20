@@ -47,6 +47,52 @@ func (q *ConcurrentQueue) Append(item interface{}) error {
 	return err
 }
 
+func (q *ConcurrentQueue) Front() interface{} {
+	q.queueCond.L.Lock()
+	for q.queue.Len() == 0 {
+		q.queueCond.Wait()
+	}
+
+	item := q.queue.Front()
+	q.queueCond.L.Unlock()
+	return item.Value
+}
+
+func (q *ConcurrentQueue) FrontNoBlocked() interface{} {
+	q.lock.Lock()
+	if q.queue.Len() == 0 {
+		q.lock.Unlock()
+		return nil
+	}
+
+	item := q.queue.Front()
+	q.lock.Unlock()
+	return item.Value
+}
+
+func (q *ConcurrentQueue) Back() interface{} {
+	q.queueCond.L.Lock()
+	for q.queue.Len() == 0 {
+		q.queueCond.Wait()
+	}
+
+	item := q.queue.Back()
+	q.queueCond.L.Unlock()
+	return item.Value
+}
+
+func (q *ConcurrentQueue) BackNoBlocked() interface{} {
+	q.lock.Lock()
+	if q.queue.Len() == 0 {
+		q.lock.Unlock()
+		return nil
+	}
+
+	item := q.queue.Back()
+	q.lock.Unlock()
+	return item.Value
+}
+
 func (q *ConcurrentQueue) Remove() interface{} {
 	q.queueCond.L.Lock()
 	for q.queue.Len() == 0 {
@@ -56,6 +102,19 @@ func (q *ConcurrentQueue) Remove() interface{} {
 	item := q.queue.Front()
 	q.queue.Remove(item)
 	q.queueCond.L.Unlock()
+	return item.Value
+}
+
+func (q *ConcurrentQueue) RemoveNoBlocked() interface{} {
+	q.lock.Lock()
+	for q.queue.Len() == 0 {
+		q.lock.Unlock()
+		return nil
+	}
+
+	item := q.queue.Front()
+	q.queue.Remove(item)
+	q.lock.Unlock()
 	return item.Value
 }
 
