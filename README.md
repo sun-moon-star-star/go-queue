@@ -18,6 +18,7 @@ func main() {
 	len := queue.Len()
 
 	element := queue.Remove()
+	queue.Done()
 
 	elementString := element.(string)
 

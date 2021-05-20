@@ -17,11 +17,11 @@ type Queue struct {
 
 func New() *Queue {
 	q := &Queue{}
-	q.Init()
+	q.init()
 	return q
 }
 
-func (q *Queue) Init() {
+func (q *Queue) init() {
 	q.queue = list.New()
 	q.maxLen = -1
 	q.queueCond = sync.NewCond(&q.lock)
